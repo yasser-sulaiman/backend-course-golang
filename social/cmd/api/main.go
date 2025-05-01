@@ -7,6 +7,8 @@ import (
 	"social/internal/store"
 )
 
+const version = "0.0.1"
+
 func main() {
 
 	dbConfig := dbConfig{
@@ -19,6 +21,7 @@ func main() {
 	cfg := config{
 		addr: env.GetString("ADDR", ":8080"),
 		db:   dbConfig,
+		env:  env.GetString("ENV", "development"),
 	}
 
 	db, err := db.New(

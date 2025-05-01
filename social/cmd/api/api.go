@@ -17,14 +17,15 @@ type application struct {
 
 type config struct {
 	addr string
-	db     dbConfig
+	db   dbConfig
+	env  string
 }
 
 type dbConfig struct {
-	addr    string
+	addr         string
 	maxOpenConns int
 	maxIdleConns int
-	maxIdleTime string //time.Duration
+	maxIdleTime  string //time.Duration
 }
 
 func (app *application) mount() http.Handler {
