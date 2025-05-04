@@ -62,7 +62,12 @@ func (app *application) mount() http.Handler {
 		// /v1/users
 		r.Route("/users", func(r chi.Router) {
 			r.Route("/{userID}", func(r chi.Router) {
+				r.Use(app.userContextMiddleware) // Middleware to extract userID from URL and set it in the context
+				
 				r.Get("/", app.getUserHandler)
+
+				r.Put("/follow", app.followUserHandler)
+				r.Put("/unfollow", app.unfollowUserHandler)
 			})
 		})
 	})
