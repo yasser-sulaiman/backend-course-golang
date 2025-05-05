@@ -25,6 +25,6 @@ func main() {
 	store := store.NewStorage(conn)
 
 	// Seed the database with initial data
-	db.Seed(store)
+	db.Seed(store, conn)
 
 }

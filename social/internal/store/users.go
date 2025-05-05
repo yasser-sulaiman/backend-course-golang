@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrDuplicateEmail   = errors.New("a user with this email already exists")
+	ErrDuplicateEmail    = errors.New("a user with this email already exists")
 	ErrDuplicateUsername = errors.New("a user with this username already exists")
 )
 
@@ -58,7 +58,7 @@ func (s *UserStore) Create(ctx context.Context, tx *sql.Tx, user *User) error {
 		query,
 		user.Username,
 		user.Email,
-		user.Password,
+		user.Password.hash,
 	).Scan(
 		&user.ID,
 		&user.CreatedAt,
