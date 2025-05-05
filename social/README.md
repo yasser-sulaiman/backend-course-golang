@@ -17,5 +17,6 @@
 
 # DOCS
 * install swagger following: [this](https://github.com/swaggo/swag)
+* follow the instruction in the link above to start
 * run `swag init -g ./api/main.go -d cmd,internal && swag fmt`
 * open `http://localhost:8080/v1/swagger/index.html` to see the docs
