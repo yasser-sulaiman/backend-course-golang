@@ -1,10 +1,11 @@
 package main
 
 import (
-	"log"
 	"social/internal/db"
 	"social/internal/env"
 	"social/internal/store"
+
+	"go.uber.org/zap"
 )
 
 const version = "0.0.1"
@@ -47,6 +48,10 @@ func main() {
 		env:  env.GetString("ENV", "development"),
 	}
 
+	// Initialize the logger
+	logger := zap.Must(zap.NewProduction()).Sugar()
+	defer logger.Sync() // flushes buffer, if any
+
 	db, err := db.New(
 		cfg.db.addr,
 		cfg.db.maxOpenConns,
@@ -54,21 +59,22 @@ func main() {
 		cfg.db.maxIdleTime,
 	)
 	if err != nil {
-		log.Panic(err)
+		logger.Fatal(err)
 	}
 
 	defer db.Close()
 
-	log.Println("Connected to database")
+	logger.Info("Connected to database")
 
 	store := store.NewStorage(db)
 
 	app := &application{
 		config: cfg,
 		store:  store,
+		logger: logger,
 	}
 
 	mux := app.mount()
 
-	log.Fatal(app.run(mux))
+	logger.Fatal(app.run(mux))
 }
