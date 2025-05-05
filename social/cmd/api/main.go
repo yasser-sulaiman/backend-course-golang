@@ -4,6 +4,7 @@ import (
 	"social/internal/db"
 	"social/internal/env"
 	"social/internal/store"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -46,6 +47,9 @@ func main() {
 		apiURL: env.GetString("EXTERNAL_URL", "localhost:8080"),
 		db:   dbConfig,
 		env:  env.GetString("ENV", "development"),
+		mail: mailConfig{
+			exp: time.Hour * 24 * 3, // 3 days
+		},
 	}
 
 	// Initialize the logger
