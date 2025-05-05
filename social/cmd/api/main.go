@@ -9,6 +9,28 @@ import (
 
 const version = "0.0.1"
 
+//	@title			Go Backend Course API
+//	@version		1.0
+//	@description	This is a what I am Learning in the Go Backend Course
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@BasePath	/v1
+
+//	@securityDefinitions.apiKey	ApiKeyAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Authorization header with JWT token
+
+//	@externalDocs.description	OpenAPI
+//	@externalDocs.url			https://swagger.io/resources/open-api/
+
 func main() {
 
 	dbConfig := dbConfig{
@@ -20,6 +42,7 @@ func main() {
 
 	cfg := config{
 		addr: env.GetString("ADDR", ":8080"),
+		apiURL: env.GetString("EXTERNAL_URL", "localhost:8080"),
 		db:   dbConfig,
 		env:  env.GetString("ENV", "development"),
 	}
