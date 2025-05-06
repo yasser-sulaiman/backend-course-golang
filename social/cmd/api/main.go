@@ -3,6 +3,7 @@ package main
 import (
 	"social/internal/db"
 	"social/internal/env"
+	"social/internal/mailer"
 	"social/internal/store"
 	"time"
 
@@ -43,12 +44,17 @@ func main() {
 	}
 
 	cfg := config{
-		addr: env.GetString("ADDR", ":8080"),
+		addr:   env.GetString("ADDR", ":8080"),
 		apiURL: env.GetString("EXTERNAL_URL", "localhost:8080"),
-		db:   dbConfig,
-		env:  env.GetString("ENV", "development"),
+		frontendURL: env.GetString("FRONTEND_URL", "http://localhost:4000"),
+		db:     dbConfig,
+		env:    env.GetString("ENV", "development"),
 		mail: mailConfig{
-			exp: time.Hour * 24 * 3, // 3 days
+			exp:       time.Hour * 24 * 3, // 3 days
+			fromEmail: env.GetString("FROM_EMAIL", "no-reply@localhost"),
+			sendGrid: sendGridConfig{
+				apiKey: env.GetString("SENDGRID_API_KEY", ""),
+			},
 		},
 	}
 
@@ -72,10 +78,16 @@ func main() {
 
 	store := store.NewStorage(db)
 
+	mailer := mailer.NewSendGrid(
+		cfg.mail.fromEmail,
+		cfg.mail.sendGrid.apiKey,
+	)
+
 	app := &application{
 		config: cfg,
 		store:  store,
 		logger: logger,
+		mailer: mailer,
 	}
 
 	mux := app.mount()
