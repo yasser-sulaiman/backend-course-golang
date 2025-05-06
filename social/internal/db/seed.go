@@ -50,7 +50,9 @@ func generateUsers(n int) []*store.User {
 		users[i] = &store.User{
 			Username: "user" + fmt.Sprint(i),
 			Email:    "user" + fmt.Sprint(i) + "@example.com",
-			RoleID:   1, // Assuming role ID 1 is for regular users
+			Role: store.Role{
+				Name: "user",
+			}, // Assuming role ID 1 is for regular users
 		}
 	}
 	return users

@@ -10,6 +10,12 @@ func (app *application) internalServerError(w http.ResponseWriter, r *http.Reque
 	writeJSONError(w, http.StatusInternalServerError, "The server encountered an internal error and was unable to complete your request.")
 }
 
+func (app *application) forbiddenResponse(w http.ResponseWriter, r *http.Request) {
+	// Log the error and send a generic message to the client.
+	app.logger.Warnw("Forbidden", "method", r.Method, "path", r.URL.Path, "error")
+	writeJSONError(w, http.StatusForbidden, "Forbidden")
+}
+
 func (app *application) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
 	// Log the error and send a generic message to the client.
 	app.logger.Warnf("Bad request", "method", r.Method, "path", r.URL.Path, "error", err.Error())
@@ -33,7 +39,6 @@ func (app *application) unauthorizedErrorResponse(w http.ResponseWriter, r *http
 	app.logger.Warnf("Unauthorized", "method", r.Method, "path", r.URL.Path, "error", err.Error())
 	writeJSONError(w, http.StatusUnauthorized, err.Error())
 }
-
 
 func (app *application) unauthorizedBasicErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 
