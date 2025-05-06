@@ -1,6 +1,7 @@
 package main
 
 import (
+	"social/internal/auth"
 	"social/internal/db"
 	"social/internal/env"
 	"social/internal/mailer"
@@ -61,6 +62,11 @@ func main() {
 				user: env.GetString("AUTH_BASIC_USER", ""),
 				pass: env.GetString("AUTH_BASIC_PASS", ""),
 			},
+			token: tokenConfig{
+				secret: env.GetString("AUTH_TOKEN_SECRET", "example"),
+				exp:    time.Hour * 24 * 7, // 7 days
+				iss:    "Social",
+			},
 		},
 	}
 
@@ -92,11 +98,18 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	JWTAuthenticator := auth.NewJWTAuthenticator(
+		cfg.auth.token.secret,
+		cfg.auth.token.iss,
+		cfg.auth.token.iss,
+	)
+
 	app := &application{
-		config: cfg,
-		store:  store,
-		logger: logger,
-		mailer: mailer,
+		config:        cfg,
+		store:         store,
+		logger:        logger,
+		mailer:        mailer,
+		authenticator: JWTAuthenticator,
 	}
 
 	mux := app.mount()
