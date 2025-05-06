@@ -44,11 +44,11 @@ func main() {
 	}
 
 	cfg := config{
-		addr:   env.GetString("ADDR", ":8080"),
-		apiURL: env.GetString("EXTERNAL_URL", "localhost:8080"),
+		addr:        env.GetString("ADDR", ":8080"),
+		apiURL:      env.GetString("EXTERNAL_URL", "localhost:8080"),
 		frontendURL: env.GetString("FRONTEND_URL", "http://localhost:4000"),
-		db:     dbConfig,
-		env:    env.GetString("ENV", "development"),
+		db:          dbConfig,
+		env:         env.GetString("ENV", "development"),
 		mail: mailConfig{
 			exp:       time.Hour * 24 * 3, // 3 days
 			fromEmail: env.GetString("FROM_EMAIL", "no-reply@localhost"),
@@ -78,10 +78,13 @@ func main() {
 
 	store := store.NewStorage(db)
 
-	mailer := mailer.NewSendGrid(
+	mailer, err := mailer.NewSendGrid(
 		cfg.mail.fromEmail,
 		cfg.mail.sendGrid.apiKey,
 	)
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	app := &application{
 		config: cfg,
