@@ -91,6 +91,7 @@ func (app *application) mount() http.Handler {
 
 		// /v1/posts
 		r.Route("/posts", func(r chi.Router) {
+			r.Use(app.AuthTokenMiddleware) // Middleware to check if the user is authenticated
 			r.Post("/", app.createPostsHandler)
 
 			r.Route("/{postID}", func(r chi.Router) {
@@ -107,7 +108,8 @@ func (app *application) mount() http.Handler {
 			r.Put("/activate/{token}", app.activateUserHandler) // Activate user account
 
 			r.Route("/{userID}", func(r chi.Router) {
-				r.Use(app.userContextMiddleware) // Middleware to extract userID from URL and set it in the context
+				r.Use(app.AuthTokenMiddleware) // Middleware to check if the user is authenticated
+				// r.Use(app.userContextMiddleware) // Middleware to extract userID from URL and set it in the context
 
 				r.Get("/", app.getUserHandler)
 
@@ -117,6 +119,7 @@ func (app *application) mount() http.Handler {
 
 			// /v1/users/feed
 			r.Group(func(r chi.Router) {
+				r.Use(app.AuthTokenMiddleware) // Middleware to check if the user is authenticated
 				r.Get("/feed", app.getUserFeedHandler)
 			})
 		})

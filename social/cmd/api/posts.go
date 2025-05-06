@@ -34,13 +34,13 @@ func (app *application) createPostsHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	user := getUserFromCtx(r)
+
 	post := &store.Post{
 		Title:   payload.Title,
 		Content: payload.Content,
 		Tags:    payload.Tags,
-
-		// change after implementing user authentication
-		UserId: 1,
+		UserId:  user.ID,
 	}
 
 	ctx := r.Context()
