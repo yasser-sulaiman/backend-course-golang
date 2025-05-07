@@ -5,6 +5,7 @@ import (
 	"social/internal/db"
 	"social/internal/env"
 	"social/internal/mailer"
+	"social/internal/ratelimiter"
 	"social/internal/store"
 	"social/internal/store/cache"
 	"time"
@@ -76,6 +77,11 @@ func main() {
 				iss:    "Social",
 			},
 		},
+		rateLimiter: ratelimiter.Config{
+			RequestsPerTimeFrame: env.GetInt("RATELIMITER_REQUESTS_COUNT", 100),
+			TimeFrame:            time.Second * 5,
+			Enabled:              env.GetBool("RATE_LIMITER_ENABLED", false),
+		},
 	}
 
 	// Initialize the logger
@@ -107,6 +113,12 @@ func main() {
 		logger.Info("Connected to Redis")
 	}
 
+	// Initialize the rate limiter
+	rateLimiter := ratelimiter.NewFixedWindowLimiter(
+		cfg.rateLimiter.RequestsPerTimeFrame,
+		cfg.rateLimiter.TimeFrame,
+	)
+
 	store := store.NewStorage(db)
 
 	mailer, err := mailer.NewSendGrid(
@@ -130,6 +142,7 @@ func main() {
 		mailer:        mailer,
 		authenticator: JWTAuthenticator,
 		cacheStorage:  cache.NewRedisStorage(rdb),
+		rateLimiter:   rateLimiter,
 	}
 
 	mux := app.mount()

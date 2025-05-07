@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	//"github.com/sikozonpc/social/internal/ratelimiter"
 	"social/internal/auth"
+	"social/internal/ratelimiter"
 	"social/internal/store"
 	"social/internal/store/cache"
 
@@ -25,10 +25,10 @@ func newTestApplication(t *testing.T, cfg config) *application {
 	testAuth := &auth.TestAuthenticator{}
 
 	// Rate limiter
-	// rateLimiter := ratelimiter.NewFixedWindowLimiter(
-	// 	cfg.rateLimiter.RequestsPerTimeFrame,
-	// 	cfg.rateLimiter.TimeFrame,
-	// )
+	rateLimiter := ratelimiter.NewFixedWindowLimiter(
+		cfg.rateLimiter.RequestsPerTimeFrame,
+		cfg.rateLimiter.TimeFrame,
+	)
 
 	return &application{
 		logger:        logger,
@@ -36,7 +36,7 @@ func newTestApplication(t *testing.T, cfg config) *application {
 		cacheStorage:  mockCacheStore,
 		authenticator: testAuth,
 		config:        cfg,
-		//rateLimiter:   rateLimiter,
+		rateLimiter:   rateLimiter,
 	}
 }
 
